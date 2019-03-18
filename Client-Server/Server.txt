@@ -1,0 +1,92 @@
+//Linux server that receives requests from the client
+
+public class Server {
+	public static void main(String[] args) {
+		ServerSocket server = null;
+		
+		try {
+			server = new ServerSocket(3333); 
+			System.out.println("Awaiting connection");
+		}
+		catch (IOException e){ 
+			System.out.println(e);
+		}
+		try {
+			while(true) { 
+				Socket serviceSocket = server.accept();    
+				new Thread(new ServerThread(serviceSocket)).start();
+				System.out.println("Processing");
+			}
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
+
+//Server Thread 
+public class ServerThread extends Thread{
+	Socket socket = null;
+	String command;
+	PrintWriter out;
+	BufferedReader in;
+	
+	public ServerThread(Socket socket) { 
+		this.socket = socket;
+	}
+	
+	
+	public void run() {
+		System.out.println("Connection accepted");
+		try {
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
+            while(!socket.isClosed() && (command = in.readLine()) != null) {
+            	
+            	if (command.equals("exit")) {
+                    out.println("closing");
+                    out.close();
+                    in.close();
+                    socket.close();
+                    System.out.println("Connection, socket, and I/O streams closed");
+                    break;
+                 }
+            	
+            	else {
+                    try {
+                       Process request = Runtime.getRuntime().exec(command);
+                       BufferedReader input = new BufferedReader(new InputStreamReader(request.getInputStream()));
+                       String line = null;
+
+                       while ((line = input.readLine()) != null) {
+                          out.println(line);
+                       }
+                       
+                       out.close();
+                       System.out.println("Command completed"); 
+                       request.waitFor();
+                       in.close();
+                    } 
+                    catch (Exception e) {
+                 	   e.printStackTrace();
+                    }                
+                 }
+            }
+            
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}	
+		finally {
+			try {
+			socket.close();
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+		
+		
+	}
+}

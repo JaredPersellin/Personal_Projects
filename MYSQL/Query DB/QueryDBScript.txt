@@ -1,0 +1,22 @@
+USE employees;
+SELECT gender, count(*) FROM Employees GROUP BY gender;
+SELECT first_name FROM Employees GROUP BY first_name ORDER BY count(*) DESC LIMIT 1;
+SELECT first_name FROM Employees WHERE gender = 'M' GROUP BY first_name ORDER BY count(*) DESC LIMIT 1;
+SELECT first_name FROM Employees WHERE gender = 'F' GROUP BY first_name ORDER BY count(*) DESC LIMIT 1;
+SELECT last_name FROM dept_manager, Employees WHERE dept_manager.emp_no = Employees.emp_no GROUP BY last_name ORDER BY count(*) DESC LIMIT 1;
+SELECT gender, avg(salary) FROM salaries, Employees WHERE salaries.emp_no = Employees.emp_no GROUP BY gender;
+SELECT avg(salary) FROM salaries, Employees WHERE salaries.emp_no = Employees.emp_no;
+SELECT count(*) FROM Employees WHERE hire_date > '1995-01-28';
+SELECT MAX(hire_date) FROM Employees  LIMIT 1;
+SELECT count(*), gender FROM Employees WHERE hire_date > '1995-01-28' GROUP BY gender ORDER BY 'M';
+SELECT TIMESTAMPDIFF (YEAR, birth_date, CURDATE()) AS "age", gender FROM Employees GROUP BY gender ORDER BY 'M';
+Select AVG(birth_date) FROM Employees;
+create table ages (age int);
+insert into ages SELECT TIMESTAMPDIFF (YEAR, birth_date, CURDATE()) AS "age" FROM Employees;
+SELECT AVG(age) from ages;
+drop table ages;
+SELECT dept_no, gender, count(*) FROM Employees, dept_emp WHERE Employees.emp_no=dept_emp.emp_no  GROUP BY dept_no;
+
+SELECT COUNT(*)
+FROM (SELECT d.emp_no, COUNT(*) as CNT FROM dept_emp d 
+group by d.emp_no) AS P;

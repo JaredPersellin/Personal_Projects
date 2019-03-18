@@ -1,0 +1,74 @@
+create database WorldMap;
+use WorldMap;
+
+CREATE TABLE LandMasses(
+name VARCHAR(50) NOT NULL PRIMARY KEY,
+area VARCHAR(50)
+);
+
+CREATE TABLE Continent(
+name VARCHAR(50) NOT NULL PRIMARY KEY,
+FOREIGN KEY(name) REFERENCES LandMasses(name)
+);
+
+CREATE TABLE Continent_Connected(
+name VARCHAR(50),
+conn_name VARCHAR(50),
+PRIMARY KEY(name, conn_name),
+FOREIGN KEY(name) REFERENCES LandMasses(name),
+FOREIGN KEY(conn_name) REFERENCES LandMasses(name)
+);
+
+CREATE TABLE Bodies_of_Water(
+name VARCHAR(50) NOT NULL PRIMARY KEY,
+area VARCHAR(50)
+);
+
+CREATE TABLE ocean(
+name VARCHAR(50) NOT NULL PRIMARY KEY,
+FOREIGN KEY(name) REFERENCES Bodies_of_Water(name)
+);
+
+CREATE TABLE strait(
+name VARCHAR(50) NOT NULL PRIMARY KEY,
+FOREIGN KEY(name) REFERENCES Bodies_of_Water(name)
+);
+
+CREATE TABLE Island(
+name VARCHAR(50) NOT NULL PRIMARY KEY,
+ocean_name VARCHAR(50),
+strait_name VARCHAR(50),
+continent_name VARCHAR(50),
+FOREIGN KEY(name) REFERENCES LandMasses(name),
+FOREIGN KEY(ocean_name) REFERENCES ocean(name),
+FOREIGN KEY(strait_name) REFERENCES strait(name),
+FOREIGN KEY(continent_name) REFERENCES Continent(name)) ;
+
+
+insert into LandMasses values ("North America", 24709000), ("South America", 17840000),("Europe", 10180000),("Asia", 44579000),("Antarctica", 14000000),("Australia", 8600000);
+insert into LandMasses values ("Africa", 30370000);
+insert into Continent values ("North America"), ("South America"),("Europe"),("Asia"),("Antarctica"),("Australia");
+insert into Continent values ("Africa");
+insert into Continent_Connected values ("Antarctica","South America"),("Australia","Asia");
+insert into Continent_Connected values ("Africa", "Asia");
+insert into Bodies_of_Water values ("Malacca Strait", 95033), ("Palk Strait", 66754),("Sunda Strait", 554566),("Yucatan Strait",88900),("Mesina Strait",54233),("Otranto Strait",32115), ("Bab-el-Mandeb Strait",89371),("Cook Strait",564456),("Mozambique Strait",564455),("North Channel",22343),("Taurus Strait",54466),("Bass Strait",81846),("Bering Strait", 886567),("Bonne-Fasio Strait", 55645),("Bosporous Strait", 13221),("Atlantic Ocean",85133000),("Arctic Ocean",18750000),("Southern Ocean",71800000),("Indian Ocean",70560000),("Pacific Ocean",168723000);
+insert into ocean values ("Atlantic Ocean"), ("Arctic Ocean"),("Southern Ocean"),("Indian Ocean"),("Pacific Ocean");
+insert into strait values ("Malacca Strait"), ("Palk Strait"),("Sunda Strait"),("Yucatan Strait"),("Mesina Strait"),("Otranto Strait"), ("Bab-el-Mandeb Strait"),("Cook Strait"),("Mozambique Strait"),("North Channel"),("Taurus Strait"),("Bass Strait"),("Bering Strait"),("Bonne-Fasio Strait"),("Bosporous Strait");
+insert into LandMasses values ("Greenland", 2130800), ("New Guinea", 785753),("Borneo", 743330),("Madagascar", 587713),("Baffin", 507451),("Sumatra", 443066);
+insert into LandMasses values ("Hawaiʻi", 10433),("Kodiak Island",9293),("Puerto Rico", 8710),("Prince of Wales Island",6675),("Chichagof Island",5388);
+insert into LandMasses values ("Easter Island",163.6),("Chanaral, Isla",6.55),("Alejandro Selkirk",50),("Mocha",48),("Teja",8);
+insert into LandMasses values ("Great Britain",229848),("Iceland",101826),("Ireland",84421),("Severny Island",47079),("Spitsbergen",37673);
+insert into LandMasses values ("Zanzibar", 110008),("Sao Tome",854),("Lamu",221),("Canary",441),("Comoros",2034);
+insert into LandMasses values ("East Timor", 5515),("Pansong",622);
+insert into Island  values ("Greenland", "Arctic Ocean","Cook Strait","Europe"),("New Guinea", "Pacific Ocean","Sunda Strait","Asia"),("Borneo", "Pacific Ocean", "Bass Strait","Asia"),("Sumatra", "Pacific Ocean","Yucatan Strait", "Asia"),("Hawaiʻi", "Atlantic Ocean","Otranto Strait","North America"),("Kodiak Island","Atlantic Ocean","Otranto Strait","North America"),("Puerto Rico", "Atlantic Ocean", "Malacca Strait","North America"),("Prince of Wales Island","Atlantic Ocean","Otranto Strait","North America"),("Chichagof Island","Atlantic Ocean","Malacca Strait","North America"),("Easter Island","Atlantic Ocean","Malacca Strait","South America"),("Chanaral, Isla","Atlantic Ocean","Bab-el-Mandeb Strait","South America");
+insert into Island  values ("Alejandro Selkirk","Atlantic Ocean","Bab-el-Mandeb Strait","South America");
+insert into Island  values ("Mocha","Atlantic Ocean","Bab-el-Mandeb Strait","South America"),("Teja","Atlantic Ocean","Bosporous Strait","South America"),("Great Britain","Atlantic Ocean","Bosporous Strait","Europe");
+insert into Island  values ("Iceland","Arctic Ocean","Bosporous Strait","Europe"),("Ireland","Arctic Ocean","Taurus Strait","Europe"),("Severny Island","Arctic Ocean","North Channel","Europe"),("Spitsbergen","Arctic Ocean","North Channel","Europe"),("Zanzibar", "Indian Ocean","North Channel","Africa"),("Sao Tome","Indian Ocean","Taurus Strait","Africa"),("Lamu","Indian Ocean","Taurus Strait","Africa"),("Canary","Indian Ocean","Palk Strait","Africa"),("Comoros","Indian Ocean","Palk Strait","Africa"),("East Timor", "Pacific Ocean","Palk Strait","Asia"),("Pansong","Pacific Ocean","Palk Strait","Asia");
+
+#drop table Island;
+#drop table strait;
+#drop table ocean;
+#drop table Bodies_of_Water;
+#drop table Continent_Connected;
+#drop table Continent;
+#drop table LandMasses;

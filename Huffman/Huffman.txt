@@ -1,0 +1,93 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.PriorityQueue;
+
+//Snippet Huffman tree
+
+abstract class treeObj implements Comparable<treeObj> {
+	public final int frqncy1;
+
+	public treeObj(int leafOccurance) {
+		frqncy1 = leafOccurance;
+	}
+
+	@Override
+	public int compareTo(treeObj treeA) {
+		return frqncy1 - treeA.frqncy1;
+	}
+}
+
+class LeafObj extends treeObj {
+	public final char leafData1;
+
+	public LeafObj(int leafOccurance, char leafChar) {
+		super(leafOccurance);
+		leafData1 = leafChar;
+	}
+}
+
+class NodeA extends treeObj {
+	public final treeObj leftNodes;
+	public final treeObj rightNodes;
+
+	public NodeA(treeObj firstOne, treeObj secondOne) {
+		super(firstOne.frqncy1 + secondOne.frqncy1);
+		leftNodes = firstOne;
+		rightNodes = secondOne;
+	}
+}
+
+public class Temp {
+	public static treeObj creatTree(int[] frequency) {
+		PriorityQueue<treeObj> tAry = new PriorityQueue<>();
+		for (int i = 0; i < frequency.length; i++) {
+			if (frequency[i] > 0) {
+				tAry.offer(new LeafObj(frequency[i], (char) i));
+			}
+		}
+		while (tAry.size() > 1) {
+			treeObj a = tAry.poll();
+			treeObj b = tAry.poll();
+			tAry.offer(new NodeA(a, b));
+		}
+		return tAry.poll();
+	}
+
+	////////////////////////////////////////////////////////////////
+	// public static void PrintTree(treeObj treeA)
+	////////////////////////////////////////////////////////////////
+	public static void printCodes(treeObj treeA, StringBuffer prefix) {
+		if (treeA instanceof LeafObj) {
+			LeafObj leaf = (LeafObj) treeA;
+			System.out.println(new StringBuilder().append(leaf.leafData1).append("\t\t").append(leaf.frqncy1)
+					.append("\t\t\t\t").append(prefix).toString());
+		} else if (treeA instanceof NodeA) {
+			NodeA node = (NodeA) treeA;
+			prefix.append('0');// left
+			printCodes(node.leftNodes, prefix);
+			prefix.deleteCharAt(prefix.length() - 1);
+			prefix.append('1');// right
+			printCodes(node.rightNodes, prefix);
+			prefix.deleteCharAt(prefix.length() - 1);
+		}
+	}
+
+	public static void main(String[] args) {
+		File objfle = new File(args[0]);
+		try {
+			BufferedReader buffRead = new BufferedReader(new FileReader(objfle));
+			String test = buffRead.readLine();
+			String newString = test.replaceAll("[^A-G]", "");
+			int[] frequency = new int[512];
+			for (char c : newString.toCharArray()) {
+				frequency[c]++;
+			}
+			treeObj treeA = creatTree(frequency);
+			System.out.println("Char\tFrequency\tCode");
+			// printTree(treeA);
+			printCodes(treeA, new StringBuffer());
+		} catch (Exception e) {
+		}
+	}
+}

@@ -1,0 +1,211 @@
+var cardController = document.getElementById("paymentControls").innerHTML;
+var payPalOptions = 'Email Address: <br><input type="text" id="emailPayPal" name="payPal email"><br>' +
+   'Password: <br><input type="password" id="password" name="password"><br>';
+var payPalUsed = false;
+
+function testLength(value, length, exactLength){
+  if(exactLength == false){
+    if(value.length >= length)
+      return true;
+  }
+  else if(exactLength == true){
+    if(value.length == length)
+      return true;
+  }
+  return false;
+}
+
+function testNumber(value){
+  if(!(isNaN(value))){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+function updateForm(control){
+    if(control.id === "paypal"){
+      document.getElementById("outputs").innerHTML = "";
+      document.getElementById("paymentControls").innerHTML = payPalOptions;
+      payPalUsed = true;
+    }
+    else if(control.id === "credit"){
+      document.getElementById("outputs").innerHTML = "";
+      document.getElementById("paymentControls").innerHTML = cardController;
+      payPalUsed = false;
+    }
+}
+
+function validateControl(control, name, length){
+  var LengthTester;
+
+  if(testNumber(control) == false){
+    document.getElementById("outputs").innerHTML = name + ": " +  control + " is not a number.";
+    return false;
+  }
+  else{
+    if(name == "Zip"){
+      LengthTester = testLength(control, length, true);
+      if(LengthTester == false){
+        document.getElementById("outputs").innerHTML = name + " must be " + length + " digits long.";
+        return false;
+      }
+    }
+    else if(name == "CVV2/CVC"){
+      LengthTester = testLength(control, length, true);
+      if(LengthTester == false){
+        document.getElementById("outputs").innerHTML = name + " must be " + length + " digits long.";
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function validateCreditCard(value){
+  var cardIss;
+  var cardIssLength;
+  var LengthTester;
+  value = value.replace(/ /g, "");
+
+  if(testNumber(value) == false){
+    document.getElementById("outputs").innerHTML = "Card Number: " + value + " is not a number.";
+    return false;
+  }
+  else{
+    if(value.charAt(0) == 3){
+      cardIss = "AmEx";
+      cardIssLength = 15;
+      LengthTester = testLength(value, cardIssLength, true);
+      if(LengthTester == false){
+        document.getElementById("outputs").innerHTML = cardIss + " requires a length of: " + cardIssLength;
+        return LengthTester;
+      }
+      return LengthTester;
+    }
+    else if(value.charAt(0) == 4){
+      cardIss = "Visa";
+      cardIssLength = 16;
+      LengthTester = testLength(value, cardIssLength, true);
+      if(LengthTester == false){
+        document.getElementById("outputs").innerHTML = cardIss + " requires a length of: " + cardIssLength;
+        return LengthTester;
+      }
+      return LengthTester;
+    }
+    else if(value.charAt(0) == 5){
+      cardIss = "Mastercard";
+      cardIssLength = 16;
+      LengthTester = testLength(value, cardIssLength, true);
+      if(LengthTester == false){
+        document.getElementById("outputs").innerHTML = cardIss + " requires a length of: " + cardIssLength;
+        return LengthTester;
+      }
+      return LengthTester;
+    }
+    else if(value.charAt(0) == 6){
+      cardIss = "Discover";
+      cardIssLength = 16;
+      LengthTester = testLength(value, cardIssLength, true);
+      if(LengthTester == false){
+        document.getElementById("outputs").innerHTML = cardIss + " requires a length of: " + cardIssLength;
+        return LengthTester;
+      }
+      return LengthTester;
+    }
+    else{
+      document.getElementById("outputs").innerHTML = "Invalid credit card type."
+      return false;
+    }
+  }
+}
+
+function validateDate(value){
+  value = value.substr(5);
+  value = parseInt(value, 10);
+  var d = new Date();
+  var currentDate = d.getMonth() + 1;
+  if(value >= currentDate + 1){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+function validateEmail(value){
+  var check = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  var passedReg = check.test(String(value).toLowerCase());
+  if(passedReg == false){
+    document.getElementById("outputs").innerHTML = value + " is an invalid email. Please enter a valid email address";
+  }
+  return passedReg;
+}
+
+function validateForm(){
+  document.getElementById("outputs").innerHTML = "";
+  var passedTests = false;
+
+  if(payPalUsed == false){
+    var address = document.getElementById("address").value;
+    var cardNumber = document.getElementById("cardNumber").value;
+    var emailCard = document.getElementById("emailCard").value;
+    var expiration = document.getElementById("expiration").value;
+    var lastName = document.getElementById("lastName").value;
+    var nameOnCard = document.getElementById("nameOnCard").value;
+    var zip = document.getElementById("zip").value;
+    var city = document.getElementById("city").value;
+    var cvv = document.getElementById("cvv").value;
+    passedTests = validateDate(expiration);
+    if(passedTests == true){
+      passedTests = validateEmail(emailCard);
+      if(passedTests == true){
+        passedTests = validateState();
+        if(passedTests == true){
+          passedTests = validateCreditCard(cardNumber);
+          if(passedTests == true){
+            passedTests = validateControl(zip, "Zip", 5);
+            if(passedTests == true){
+              passedTests = validateControl(cvv, "CVV2/CVC", 3);
+              if(passedTests == true){
+                document.getElementById("outputs").innerHTML = "Payment submitted, thank you."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  else if(payPalUsed == true){
+    var emailPayPal = document.getElementById("emailPayPal").value;
+    var password = document.getElementById("password").value;
+    passedTests = validateEmail(emailPayPal);
+    if(passedTests == true)
+      passedTests = validatePassword(password, 3);
+      if(passedTests == true){
+        document.getElementById("outputs").innerHTML = "Payment submitted, thank you."
+      }
+    }
+  return false;
+}
+
+function validatePassword(value, minLength){
+  LengthTester = testLength(value, minLength, false);
+  if(LengthTester == false){
+    document.getElementById("outputs").innerHTML = "Password must be at least " + minLength + " characters.";
+    return LengthTester;
+  }
+  return LengthTester;
+}
+
+function validateState(){
+  var state = document.getElementById("state").value;
+  if(state == "Select State"){
+    document.getElementById("outputs").innerHTML = "State is a required field.";
+    return false;
+  }
+  else{
+    return true;
+  }
+}

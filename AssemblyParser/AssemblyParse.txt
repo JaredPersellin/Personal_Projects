@@ -1,0 +1,123 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+//Snippet: input is a SICXE program file. Output is a symbol table that includes memory locations 
+	public static void lister(String[] tempAry) {// start lister
+		String substring = tempAry[0].substring(19, 28);
+		String intValue = substring.replaceAll("[^0-9]", "");
+		int start = Integer.parseInt(intValue);
+		String realStart = Integer.toString(start);
+		int convert = Integer.parseInt(realStart, 16);
+		String[] valid2 = new String[] { "MULR", "TIXR", "SVC", "SHIFTR", "SUBR", "DIVR", "CLEAR", "RMO", "COMPR",
+				"SHIFTL", "ADDR" };
+		String[] valid3 = new String[] { "WD", "STX", "OR", "AND", "LDA", "LPS", "LDCH", "LDL", "SUBF", "JSUB", "LDX",
+				"STT", "TIX", "LDT", "STA", "TD", "STB", "LDA", "DIVF", "JEQ", "DIV", "AND", "SSK", "RD", "LDS", "MUL",
+				"J", "COMP", "JLT", "SUB", "RD", "LDB", "RSUB", "MULF", "JSUB", "LDL", "STL", "STSW", "COMPF", "ADD",
+				"JGT", "TD", "STS", "STCH", "LDF", "STF", "LDX", "ADDF", "STI", "DIV", "LDB" };
+		String base;
+		int z = 0;
+		String[] finalAry = new String[500];
+		String[] symbolTbl = new String[500];
+		String tmp;
+		String baseLabel;
+		String basePlus;
+		String baseMneumonic;
+		String baseSigns;
+		String baseOp;
+		int counter = 0;
+		int use = 0;
+		boolean valid = false;
+		String Hex = realStart;
+
+		for (int i = 0; i < tempAry.length; i++) {// start for
+			if (tempAry[i] != null) {
+				tmp = tempAry[i];
+				base = String.format("%-28s", tmp);
+				baseLabel = base.substring(0, 7).trim();
+				basePlus = base.substring(9, 10).trim();
+				baseMneumonic = base.substring(10, 16).trim();
+				baseSigns = base.substring(18, 18).trim();
+				baseOp = base.substring(19, 28).trim();
+
+				if (base.substring(0, 1).contains(".")) {
+					finalAry[i] = base;
+					valid = true;
+					boolean commented = true;
+				}
+				if (baseLabel.matches(".*[a-zA-Z]+.*") && !base.substring(0, 1).contains(".")) {
+					if (isInAry(baseLabel, symbolTbl)) {
+						System.out.println("Error, duplicate label or invalid command detected: " + baseLabel);
+						valid = false;
+					} else {
+						symbolTbl[z] = new StringBuilder().append(Integer.toString(z)).append("\t").append(baseLabel)
+								.append("\t").append(use).append("\t").append(Hex).toString();
+					}
+					z++;
+				}
+				if (isInAry(baseMneumonic, valid2) && !"+".equals(basePlus)) {
+					counter += 2;
+					valid = true;
+				}
+				if (isInAry(baseMneumonic, valid3) && !"+".equals(basePlus)) {
+					counter += 3;
+					valid = true;
+				}
+				if ("+".equals(basePlus) && (isInAry(baseMneumonic, valid3) || isInAry(baseMneumonic, valid2))) {
+					counter += 4;
+					valid = true;
+				} else if (baseMneumonic.contains("START")) {
+					valid = true;
+					counter += convert;
+				} else if (baseMneumonic.contains("BASE")) {
+					valid = true;
+				} else if (baseMneumonic.contains("USE")) {
+					use += 1;
+					valid = true;
+				} else if (baseMneumonic.contains("WORD")) {
+					counter += 3;
+					valid = true;
+				} else if (baseMneumonic.contains("RESW")) {
+					String sub = baseOp;
+					String val = sub.replaceAll("[^0-9]", "");
+					int wordss = Integer.parseInt(val);
+					counter += (wordss * 3);
+					valid = true;
+				} else if (baseMneumonic.contains("END")) {
+					valid = true;
+				}
+				if (valid) {
+					finalAry[i] = new StringBuilder().append("").append(Hex).append("\t").append(base).toString();
+					System.out.println("" + finalAry[i]);
+				} else if (!valid) {
+					System.out.println("");
+					System.out.println("command not valid: " + base);
+					System.out.println("");
+				}
+				Hex = Integer.toHexString(counter);
+				valid = false;
+			}
+		}
+		System.out.println("");
+		System.out.println("Symbol table");
+		System.out.println(new StringBuilder().append("LOC").append("\t").append("Label").append("\t").append("use")
+				.append("\t").append("Address").toString());
+		System.out.println("");
+		for (String aSymbolTbl : symbolTbl) {
+			if (aSymbolTbl != null) {
+				System.out.println("" + aSymbolTbl);
+			}
+		}
+	}// end listener
+
+	public static boolean isInAry(String current, String[] InAry) {// isinarystart
+		boolean value = false;
+		for (String aInAry : InAry) {
+			if (aInAry != null && aInAry.contains(current)) {
+				value = true;
+			}
+		}
+		return value;
+	} // isinary end
+
+}

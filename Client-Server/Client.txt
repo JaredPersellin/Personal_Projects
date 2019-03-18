@@ -1,0 +1,121 @@
+		
+		
+		//Snippet for java client that asks the server for basic information
+		boolean connected = true;
+		
+        String[] commands = {"no zero command", "date", "uptime", "free", "netstat", "users", "ps aux", "exit"};
+        
+        
+		int length = args.length;
+		String[] arr = new String[length];
+		for(int i = 0; i < length; i++) {arr[i] = args[i];}
+	   
+		server = validateArg(arr);
+
+		
+		
+		while(connected)
+		{
+			time = 0;
+		    threads = threadCount();
+		    task = new RunCommands[threads];
+		    thread = new Thread[threads];
+			UserDisplay ud = new UserDisplay();
+			
+			ud.displayMenu();
+			int selection = ud.getUserInputFromMenu();
+			System.out.println("Selected: " + selection);
+			command = commands[selection];
+			System.out.println("Command: " + command);
+			System.out.println("Response: ");
+			System.out.println("");
+			
+			if(command.equals("exit")) 
+			{
+				try
+				{
+				Socket socket = new Socket(server, RunCommands.port);
+				PrintWriter out = new PrintWriter(socket.getOutputStream());
+				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				out.println(commands[7]);
+				out.flush();
+				System.out.println(in.readLine());
+				System.out.println("Exiting..."); 
+				connected = false;
+				out.close();
+				in.close();
+				socket.close();
+				
+				}
+				catch(Exception e) {e.printStackTrace();}
+			}
+			else
+			{
+				for(int i = 0; i < threads; i++) {task[i] = new RunCommands(command, server);}
+				
+				for(int i = 0; i < threads; i++) {thread[i] = new Thread(task[i]);}
+				
+				for(int i = 0; i < threads; i++) {thread[i].start();}
+				
+				boolean running = true;
+				while (running) 
+				{
+		            running = false;
+		            for ( int i = 0; i < thread.length; i++) { if (thread[i].isAlive()) running = true; }
+		        }
+				timer(threads);
+			}
+	    }
+	}
+	
+	private static void timer(int threads)
+	{
+		System.out.print("Thread times: ");
+		for(int i = 0; i < threads; i++)
+		{
+			System.out.printf("%.2f ", task[i].getTotalTime() );
+			time += task[i].getTotalTime();
+		}
+		meanTime = (time / threads);
+		System.out.println("");
+      System.out.printf("Total time: %.2f milliseconds ", time);
+      System.out.println("");
+		System.out.printf("Average time: %.2f milliseconds ", meanTime);
+	}
+	
+	private static String validateArg(String[] argument)
+	{
+		String server = null;
+		if(argument.length != 1){
+      System.out.println("Error: Use IP address as argument");
+                System.exit(0); }
+		else server = argument[0];
+		
+		return server;
+	}
+	
+	private static int threadCount()
+	{
+		int thread = -1;
+		Scanner in = new Scanner(System.in);
+        
+		while(thread < 1) 
+		{
+			System.out.println("");	
+			System.out.print("How many users? ");
+			
+			if(in.hasNextInt()) 
+			{                                                                           
+				thread = in.nextInt();
+				if(thread < 1) {System.out.println("Invalid Entry");}
+			}
+			else
+			{
+				in.nextLine();
+				System.out.println("Invalid entry");
+			}
+		}
+		System.out.println("Number of threads: " + thread);
+		return thread;
+	}
+}

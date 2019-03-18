@@ -1,0 +1,261 @@
+
+
+//Snippet Final code generator for SICXE Assembly
+
+	public static void lister(String[] tempAry) {// start lister
+		String substring = tempAry[0].substring(19, 28);
+		String intValue = substring.replaceAll("[^0-9]", "");
+		int start = Integer.parseInt(intValue);
+		String realStart = Integer.toString(start);
+		String Hexer;
+		String displacementFinal;
+		int also = 0;
+		int intNumber;
+		String HexerFinalPad;
+		int time = 0;
+		int displacement = 0;
+		String forEIsOne;
+		String symbolTableLoc = "44";
+		int convert = Integer.parseInt(realStart, 16);
+		String[] valid2 = new String[] { "MULR", "TIXR", "SVC", "SHIFTR", "SUBR", "DIVR", "CLEAR", "RMO", "COMPR",
+				"SHIFTL", "ADDR" };
+		String[] valid3 = new String[] { "WD", "STX", "OR", "AND", "LDA", "LPS", "LDCH", "LDL", "SUBF", "JSUB", "LDX",
+				"STT", "TIX", "LDT", "STA", "TD", "STB", "DIVF", "JEQ", "DIV", "SSK", "RD", "LDS", "MUL", "J", "COMP",
+				"JLT", "SUB", "LDB", "RSUB", "MULF", "LDL", "STL", "STSW", "COMPF", "ADD", "JGT", "TD", "STS", "STCH",
+				"LDF", "STF", "LDX", "ADDF", "STI" };
+		String[] ObjFile = new String[100];
+		String[] opCodes3 = new String[] { "DC", "10", "44", "40", "00", "D0", "50", "08", "5C", "48", "04", "84", "2C",
+				"74", "0C", "E0", "78", "64", "30", "24", "EC", "D8", "6C", "20", "3C", "28", "38", "1C", "68", "4C",
+				"60", "08", "14", "E8", "88", "18", "34", "E0", "7C", "54", "70", "04", "58", "D4" };
+
+		String base;
+		String displacementFinalPad;
+		int xbpe = 0;
+		int z = 0;
+		String tmp;
+		String baseLoc = "ahere";
+		String baseLabel;
+		String basePlus;
+		String baseMneumonic;
+		String baseSigns;
+		String baseOp;
+		int counter = 0;
+		int use = 0;
+		boolean valid = false;
+		String Hex = realStart;
+
+		for (int i = 0; i < tempAry.length; i++) {// start for
+			if (tempAry[i] != null) { // first if loop
+				tmp = tempAry[i];
+				base = String.format("%-28s", tmp);
+				baseLabel = base.substring(0, 7).trim();
+				basePlus = base.substring(9, 10).trim();
+				baseMneumonic = base.substring(10, 16).trim();
+				baseSigns = base.substring(18, 18).trim();
+				baseOp = base.substring(19, 28).trim();
+				baseOpArray[i] = baseOp;
+				basePlusArray[i] = basePlus;
+				baseSignsArray[i] = baseSigns;
+
+				if (base.substring(0, 1).contains(".")) {
+					finalAry[i] = base;
+					valid = true;
+					boolean commented = true;
+				}
+				if (baseLabel.matches(".*[a-zA-Z]+.*") && !base.substring(0, 1).contains(".")) {
+					if (isInAry(baseLabel, symbolTbl)) {
+						System.out.println("Error, duplicate label or invalid command detected: " + baseLabel);
+						valid = false;
+					} else {
+						symbolTbl[z] = new StringBuilder().append(Integer.toString(z)).append("\t").append(baseLabel)
+								.append("\t").append(use).append("\t").append(Hex).toString();
+					}
+					z++;
+				}
+				if (isInAry(baseMneumonic, valid2) && !"+".equals(basePlus)) {
+					counter += 2;
+					valid = true;
+				}
+				if (isInAry(baseMneumonic, valid3) && !"+".equals(basePlus)) {
+					counter += 3;
+					valid = true;
+				}
+				if ("+".equals(basePlus) && (isInAry(baseMneumonic, valid3) || isInAry(baseMneumonic, valid2))) {
+					counter += 4;
+					valid = true;
+				} else if (baseMneumonic.contains("START")) {
+					valid = true;
+					counter += convert;
+				} else if (baseMneumonic.contains("BASE")) {
+					valid = true;
+					baseLoc = Hex;
+				} else if (baseMneumonic.contains("USE")) {
+					use += 1;
+					valid = true;
+				} else if (baseMneumonic.contains("WORD")) {
+					counter += 3;
+					valid = true;
+				} else if (baseMneumonic.contains("RESW")) {
+					String sub = baseOp;
+					String val = sub.replaceAll("[^0-9]", "");
+					int wordss = Integer.parseInt(val);
+					counter += (wordss * 3);
+					valid = true;
+				} else if (baseMneumonic.contains("END")) {
+					valid = true;
+				}
+				if (valid) {
+					finalAry[i] = new StringBuilder().append("").append(Hex).append("\t").append(base).toString();
+					System.out.println("" + finalAry[i]);
+				} else if (!valid) {
+					System.out.println("");
+					System.out.println("command not valid: " + base);
+					System.out.println("");
+				}
+				Hex = Integer.toHexString(counter);
+				valid = false;
+				if (isInAry(baseMneumonic, valid3)) {
+
+					for (int h = 0; h < valid3.length; h++) {
+						if (valid3[h] != null && valid3[h].contains(baseMneumonic)) {
+							if (opCodes3[h] != null) {// n=1 i=1
+								intNumber = Integer.parseInt(opCodes3[h], 16);
+								intNumber += 3;
+
+								Hexer = Integer.toHexString(intNumber);
+								// HexerFinalPad = String.format ("%2d", Hexer);
+								ObjFile[time] = Hexer;
+								System.out.println("displacementFinalPad " + Hexer);
+								intNumber = 0;
+							} // end n=1 i=1
+							else if (baseSigns.equals("@")) // n=1 i=0
+							{
+								intNumber = Integer.parseInt(ObjFile[i], 16);
+								intNumber += 2;
+								Hexer = Integer.toHexString(intNumber);
+								ObjFile[i] = Hexer;
+							} // end n=1 i=0
+							else if (baseSigns.equals("#")) // n=0 i=1
+							{
+								intNumber = Integer.parseInt(ObjFile[i], 16);
+								intNumber += 1;
+								Hexer = Integer.toHexString(intNumber);
+								ObjFile[i] = Hexer;
+							} // end n=1 i=0
+							time++;
+						}
+					}
+					intNumber = 0;
+				} else if (isInAry(baseMneumonic, valid2)) {
+					for (int q = 0; q < valid2.length; q++) {
+						if (valid2[q] != null && valid2[q].contains(baseMneumonic)) {
+							ObjFile[i] = opCodes2[q];
+							if (baseSigns == null) {// n=1 i=1
+								intNumber = Integer.parseInt(ObjFile[i], 16);
+								intNumber += 3;
+								Hexer = Integer.toHexString(intNumber);
+								ObjFile[i] = Hexer;
+								System.out.println("Symbol table2" + intNumber);
+							} // end n=1 i=1
+							else if (baseSigns.equals("@")) // n=1 i=0
+							{
+								intNumber = Integer.parseInt(ObjFile[i], 16);
+								intNumber += 2;
+								Hexer = Integer.toHexString(intNumber);
+								ObjFile[i] = Hexer;
+								System.out.println("Symbol table2" + intNumber);
+							} // end n=1 i=0
+							else if (baseSigns.equals("#")) // n=0 i=1
+							{
+								intNumber = Integer.parseInt(ObjFile[i], 16);
+								intNumber += 1;
+								Hexer = Integer.toHexString(intNumber);
+								ObjFile[i] = Hexer;
+								System.out.println("Symbol table2" + intNumber);
+							} // end n=1 i=0
+
+						}
+					}
+					intNumber = 0;
+				}
+			} // end i for
+		}
+
+		// pass 2
+		for (int n = 0; n < 50; n++) {
+			if (baseOpArray[n] != null && isInAry(baseOpArray[n], symbolTbl)
+					&& (baseOpArray[n].matches(".*[a-zA-Z]+.*")) && symbolTbl[n] != null
+					&& !baseOpArray[n].equals("END")) // displacement
+			{
+				for (String aSymbolTbl : symbolTbl) {
+					if (aSymbolTbl != null && aSymbolTbl.contains(baseOpArray[n]) && symbolTbl[n] != null) {
+						String another = symbolTbl[n].replace("\t", " ");
+						symbolTableLoc = another.substring(another.lastIndexOf(' ') + 1);
+					}
+				}
+				String newHex = Hex;
+				int baser = Integer.parseInt(baseLoc);
+				String imbetween = finalAry[n].substring(0, 4).trim();
+				int pcAddress = Integer.parseInt(imbetween);
+				int symbolTableLocdecimal = Integer.parseInt(symbolTableLoc);
+
+				displacement = symbolTableLocdecimal - pcAddress;
+				if (displacement > 2047) {
+					displacement = symbolTableLocdecimal - baser;
+					xbpe += 4;
+				} else if (displacement < 2047) {
+					xbpe += 2;
+				}
+			}
+			if (basePlusArray[n] != null && basePlusArray[n].contains("+")) {
+				xbpe = 1;
+			}
+			if (basePlusArray[n] != null && basePlusArray[n].contains("x")) {
+				xbpe += 8;
+			}
+			String Flag = Integer.toHexString(xbpe);
+			if (xbpe != 0) {
+				ObjFile[also] = ObjFile[also] + Flag;
+				if (xbpe == 1 || xbpe == 9) {
+					ObjFile[also] = ObjFile[also] + "00";
+					ObjFile[also] = ObjFile[also] + symbolTableLoc;
+					also++;
+				} else {
+					displacementFinalPad = String.format("%03d", displacement);
+					ObjFile[also] = ObjFile[also] + displacementFinalPad;
+					also++;
+				}
+			}
+			xbpe = 0;
+		} // end first for loop
+
+		System.out.println("");
+		System.out.println("Symbol table");
+		System.out.println(new StringBuilder().append("LOC").append("\t").append("Label").append("\t").append("use")
+				.append("\t").append("Address").toString());
+		System.out.println("");
+		for (String aSymbolTbl : symbolTbl) {
+			if (aSymbolTbl != null) {
+				System.out.println("" + aSymbolTbl);
+			}
+		}
+		System.out.println("");
+		System.out.println("Object File");
+		System.out.println("");
+		for (int u = 0; u < symbolTbl.length; u++) {
+			if (symbolTbl[u] != null && ObjFile[u] != null) {
+				System.out.println("" + ObjFile[u]);
+			}
+		}
+	}// end listener
+
+	public static boolean isInAry(String current, String[] InAry) {// isinarystart
+		boolean value = false;
+		for (String aInAry : InAry) {
+			if (aInAry != null && aInAry.contains(current)) {
+				value = true;
+			}
+		}
+		return value;
+	} // isinary end
+}

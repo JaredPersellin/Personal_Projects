@@ -1,0 +1,45 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+//Snippet for recursive knapsack problem
+
+public class Temp {
+	public static int arrayItems[];
+	public static ArrayList<Integer> values = new ArrayList<>();
+
+	public static void knapsack(int targetWeight, int i) {
+		if (i == (arrayItems.length)) {
+			if (targetWeight == 0) {
+				values.forEach(value -> System.out.print(value + "\t"));
+				System.out.println();
+			}
+			return;
+		}
+		values.add(arrayItems[i]);
+		knapsack(targetWeight - arrayItems[i], i + 1);
+		values.remove(values.size() - 1);
+		knapsack(targetWeight, i + 1);
+	}
+
+	public static void main(String[] args) {
+
+		Scanner in = new Scanner(System.in);
+		System.out.println("Enter the input:");
+		String inp = in.nextLine();
+		String[] weights = inp.split(" ");
+		int size = Integer.parseInt(weights[0]);
+		int n = weights.length - 1;
+		arrayItems = new int[n];
+		for (int i = 1; i <= n; i++) {
+			arrayItems[i - 1] = Integer.parseInt(weights[i]);
+		}
+		int targetWeight = size;
+		System.out.println("Possible weights: ");
+		for (int arrayItem : arrayItems) {
+			System.out.print(arrayItem + "\t");
+		}
+		System.out.println("\nSack Size: " + targetWeight);
+		System.out.println("Solutions: ");
+		knapsack(targetWeight, 0);
+	}
+}

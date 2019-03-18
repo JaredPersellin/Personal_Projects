@@ -1,0 +1,266 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.DecimalFormat;
+
+//snippet for linear and quadratic probing
+
+		System.out.println("\n\nSearching using linear probe");// linear Searching
+		buffReader = new BufferedReader(new FileReader(args[1]));
+		System.out.println("String\t\t\t\t\tSuccess or Fail\tProbe length for success\t probe length for failure");
+		int successLength = 0;
+		int failLength = 0;
+		int sizeOfSuccess = 0;
+		int sizeOfFail = 0;
+		while ((line = buffReader.readLine()) != null) {
+			int[] tempAryAA = LinearSearch(line, tempAryA);
+			if (tempAryAA[0] == 1) {
+				System.out.println(new StringBuilder().append(line).append("\t\t\t\t\tSuccess\t\t").append(tempAryAA[1])
+						.toString());
+				successLength += tempAryAA[1];
+				sizeOfSuccess++;
+			} else {
+				System.out.println(
+						new StringBuilder().append(line).append("\t\t\t\t\tFails\t\t").append(tempAryAA[1]).toString());
+				failLength += tempAryAA[1];
+				sizeOfFail++;
+			}
+		}
+		buffReader.close();
+		System.out.println(new StringBuilder().append("Average Probe length:\t\tSuccess:")
+				.append(numberFormat.format((double) successLength / sizeOfSuccess)).append("\t\tFailure:")
+				.append(numberFormat.format((double) failLength / sizeOfFail)).toString());
+
+		System.out.println("\n\nSearching using quadratic probe");// quadratic Searching
+		buffReader = new BufferedReader(new FileReader(args[1]));
+		System.out.println("String\t\t\t\t\tSuccess or Fail\tProbe length for success\t probe length for failure");
+		successLength = 0;
+		failLength = 0;
+		sizeOfSuccess = 0;
+		sizeOfFail = 0;
+		while ((line = buffReader.readLine()) != null) {
+			int[] tempAryAA = SearchQuadraticProbe(line, tempAryB);
+			if (tempAryAA[0] == 1) {
+				System.out.println(new StringBuilder().append(line).append("\t\t\t\t\tSuccess\t\t").append(tempAryAA[1])
+						.toString());
+				successLength += tempAryAA[1];
+				sizeOfSuccess++;
+			} else {
+				System.out.println(
+						new StringBuilder().append(line).append("\t\t\t\t\tFails\t\t").append(tempAryAA[1]).toString());
+				failLength += tempAryAA[1];
+				sizeOfFail++;
+			}
+		}
+		buffReader.close();
+		System.out.println(new StringBuilder().append("Average Probe length:\t\tSuccess:")
+				.append(numberFormat.format((double) successLength / sizeOfSuccess)).append("\t\tFailure:")
+				.append(numberFormat.format((double) failLength / sizeOfFail)).toString());
+
+		System.out.println("\n\nDeleting using linear probe");// linear deleting
+		buffReader = new BufferedReader(new FileReader(args[2]));
+		System.out.println("String\t\t\t\t\tSuccess or Fail\tProbe length for success\t probe length for failure");
+		successLength = 0;
+		failLength = 0;
+		sizeOfSuccess = 0;
+		sizeOfFail = 0;
+		while ((line = buffReader.readLine()) != null) {
+			int[] tempAryAA = LinearDelete(line, tempAryA);
+			if (tempAryAA[0] == 1) {
+				System.out.println(new StringBuilder().append(line).append("\t\t\t\t\tSuccess\t\t").append(tempAryAA[1])
+						.toString());
+				successLength += tempAryAA[1];
+				sizeOfSuccess++;
+			} else {
+				System.out.println(
+						new StringBuilder().append(line).append("\t\t\t\t\tFails\t\t").append(tempAryAA[1]).toString());
+				failLength += tempAryAA[1];
+				sizeOfFail++;
+			}
+		}
+		buffReader.close();
+		System.out.println(new StringBuilder().append("Average Probe length:\t\tSuccess:")
+				.append(numberFormat.format((double) successLength / sizeOfSuccess)).append("\t\tFailure:")
+				.append(numberFormat.format((double) failLength / sizeOfFail)).toString());
+
+		buffReader = new BufferedReader(new FileReader(args[1]));
+		System.out.println("\n\nDeleting using quadratic probe");// quadratic deleting
+		System.out.println("String\t\t\tSuccess or Fail\tProbe length for success\t probe length for failure");
+		successLength = 0;
+		failLength = 0;
+		sizeOfSuccess = 0;
+		sizeOfFail = 0;
+		while ((line = buffReader.readLine()) != null) {
+			int[] tempAryAA = removeQuadraticProbe(line, tempAryB);
+			if (tempAryAA[0] == 1) {
+				System.out.println(new StringBuilder().append(line).append("\t\t\t\t\tSuccess\t\t").append(tempAryAA[1])
+						.toString());
+				successLength += tempAryAA[1];
+				sizeOfSuccess++;
+			} else {
+				System.out.println(
+						new StringBuilder().append(line).append("\t\t\t\t\tFails\t\t").append(tempAryAA[1]).toString());
+				failLength += tempAryAA[1];
+				sizeOfFail++;
+			}
+		}
+		buffReader.close();
+		System.out.println(new StringBuilder().append("Average Probe length:\t\tSuccess:")
+				.append(numberFormat.format((double) successLength / sizeOfSuccess)).append("\t\tFailure:")
+				.append(numberFormat.format((double) failLength / sizeOfFail)).toString());
+	}// end main
+
+	public static int hashNum(String key, int n) {
+		int k = 0;
+		for (int i = 0; i < key.length() - 1; i++) {
+			k = (k * 26 + (int) key.charAt(i)) % n;
+		}
+		return k;
+	}
+
+	public static int primeCheck(int x) {
+		for (int z = 3; z <= Math.sqrt(x); z += 2) {
+			if (x % z == 0) {
+				return 0;
+			}
+		}
+		return 1;
+	}
+
+	public static int hashNum(int x) {
+		if (x == 0) {
+			return 2;
+		}
+		if (x % 2 == 0) {
+			x++;
+		} else {
+			x += 2;
+		}
+		while (true) {
+			if (primeCheck(x) == 1) {
+				return x;
+			}
+			x += 2;
+		}
+	}
+
+	public static void insA(String key, String[] tempAryA, int[] ProbeA) {
+		int probe;
+		int Prober = 1;
+		int hashT = hashNum(key, tempAryA.length);
+		if (tempAryA[hashT] == null) {
+			tempAryA[hashT] = key;
+			ProbeA[hashT] = Prober;
+			probe = -1;
+		} else {
+			if (hashT == (tempAryA.length - 1)) {
+				Prober++;
+				probe = 0;
+			} else {
+				Prober++;
+				probe = hashT + 1;
+			}
+		}
+		while ((probe != -1) && (probe != hashT)) {
+			if (tempAryA[probe] == null) {
+				tempAryA[probe] = key;
+				ProbeA[probe] = Prober;
+				probe = -1;
+			} else {
+				if (probe == (tempAryA.length - 1)) {
+					Prober++;
+					probe = 0;
+				} else {
+					Prober++;
+					probe++;
+				}
+			}
+		}
+	}
+
+	public static int[] LinearSearch(String key, String[] tempAryA) {
+		int HashTquad = hashNum(key, tempAryA.length);
+		int counter = 1;
+		int Prober = 1;
+		int[] tempAryAA = new int[2];
+		while (tempAryA[HashTquad] != null) {
+			if (tempAryA[HashTquad].equals(key)) {
+				tempAryAA[0] = 1;
+				tempAryAA[1] = Prober;
+				return tempAryAA;
+			}
+			HashTquad = (HashTquad + 1) % (tempAryA.length);
+			Prober++;
+		}
+		tempAryAA[0] = -1;
+		tempAryAA[1] = Prober;
+		return tempAryAA;
+	}
+
+	public static int[] LinearDelete(String key, String[] tempAryA) {
+		int[] tempAryAA = LinearSearch(key, tempAryA);
+		if (tempAryAA[0] == -1) {
+			return tempAryAA;
+		}
+		int HashTquad = hashNum(key, tempAryA.length);
+		int Prober = 1;
+		while (!key.equals(tempAryA[HashTquad])) {
+			HashTquad = (HashTquad + 1) % (tempAryA.length);
+			Prober++;
+		}
+		tempAryAA[1] = Prober;
+		tempAryA[HashTquad] = null;
+		return tempAryAA;
+	}
+
+	public static void QuadraticInsertion(String key, String[] tempAryB, int[] probeB) {
+		int HashD = hashNum(key, tempAryB.length);
+		int HashTquad = HashD;
+		int counter = 1;
+		int Prober = 1;
+		do {
+			if (tempAryB[HashTquad] == null) {
+				tempAryB[HashTquad] = key;
+				probeB[HashTquad] = Prober;
+				return;
+			}
+			HashTquad = (HashTquad + counter * counter++) % tempAryB.length;
+		} while (HashTquad != HashD);
+	}
+
+	public static int[] SearchQuadraticProbe(String key, String[] tempAryB) {
+		int HashTquad = hashNum(key, tempAryB.length);
+		int counter = 1;
+		int Prober = 1;
+		int[] tempAryAA = new int[2];
+		while (tempAryB[HashTquad] != null) {
+			if (tempAryB[HashTquad].equals(key)) {
+				tempAryAA[0] = 1;
+				tempAryAA[1] = Prober;
+				return tempAryAA;
+			}
+			HashTquad = (HashTquad + counter * counter++) % (tempAryB.length);
+			Prober++;
+		}
+		tempAryAA[0] = -1;
+		tempAryAA[1] = Prober;
+		return tempAryAA;
+	}
+
+	public static int[] removeQuadraticProbe(String key, String[] tempAryB) {
+		int[] tempAryAA = SearchQuadraticProbe(key, tempAryB);
+		if (tempAryAA[0] == -1) {
+			return tempAryAA;
+		}
+		int HashTquad = hashNum(key, tempAryB.length);
+		int Prober = 1;
+		int counter = 1;
+		while (!key.equals(tempAryB[HashTquad])) {
+			HashTquad = (HashTquad + counter * counter++) % (tempAryB.length);
+			Prober++;
+		}
+		tempAryAA[1] = Prober;
+		tempAryB[HashTquad] = null;
+		return tempAryAA;
+	}
+}
