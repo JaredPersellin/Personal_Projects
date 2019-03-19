@@ -5,7 +5,7 @@ Almost all code is in snippets and has had comments removed to help prevent plag
 
 The AssemblyParser contains two examples of a java program that parses and partially compiles SICXE code.
 
-BreadthAndDelpthSearch_inC contains snippets from two programs for a manual breadth and deapth first search.
+BreadthAndDelpthSearch_inC contains snippets from two programs for a manual breadth and depth first search.
 
 C- Semantic Analyzer is a semantic Analyzer in Java for a loosely C based program.
 
